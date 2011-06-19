@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Original script obtained from
+# http://www.reddit.com/r/Ubuntu/shirt/b46gb/ubuntu_reddit_have_too_many_installed_kernels_in/
+
+# This script helps you remove old kernels from your system.
+# It was written and tested in Ubuntu 9.10.
+# It was written to help you, but if you break your system, it's your problem.
+# Use at your own risk!
+
+if [[ ! -z "$1" && "$2" == "IMSURE" ]]
+then
+    PACKAGES=`dpkg -l | grep ^ii | grep "$1" | awk -F' ' '{ print $2 }'`
+    echo
+    echo "Removing kernel $1 from your system."
+    echo "Hope you know what you're doing..."
+    sudo apt-get purge $PACKAGES
+    echo
+    echo "Kernel $1 removed from your system."
+    echo
+elif [[ ! -z "$1" && -z "$2" ]]
+then
+    echo
+    echo "The following packages will be removed for kernel $1."
+    PACKAGES=`dpkg -l | grep ^ii | grep "$1" | awk -F' ' '{ print $2 }'`
+    for PACKAGE in $PACKAGES
+    do
+        echo "$PACKAGE"
+    done
+    echo
+    echo "If you're SURE you want to remove $1 and all associated packages"
+    echo "run the program one more time with IMSURE at the end."
+    echo "EX: ./RMOldKernel 2.6.28-15 IMSURE"
+    echo
+else
+    echo
+    echo "This script will help remove old kernels from your system."
+    echo "You're using kernel `uname -r` right now, don't remove it!"
+    echo
+    echo "Kernels currently on your system:"
+    KERNELS=`ls /boot | grep vmlinuz | cut -d'-' -f2,3`
+    for KERNEL in $KERNELS
+    do
+        echo "$KERNEL"
+    done
+    echo
+    echo "Now, run this script again with the kernel to see what will be removed."
+    echo "EX: ./RMOldKernel 2.6.28-15"
+    echo
+    echo "DO NOT REMOVE `uname -r` or you WILL break your system!"
+    echo
+fi
